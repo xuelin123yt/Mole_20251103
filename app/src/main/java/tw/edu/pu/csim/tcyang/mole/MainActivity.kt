@@ -49,19 +49,22 @@ fun MoleScreen(moleViewModel: MoleViewModel = viewModel()) {
 
     val moleSizeDp = 150.dp
     val density = LocalDensity.current
-    val moleSizePx = with(density) { moleSizeDp.toPx().toInt() } // 轉成像素
+    val moleSizePx = with(density) { moleSizeDp.toPx().toInt() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .onSizeChanged { intSize ->
-                moleViewModel.getArea(intSize, moleSizePx) // 傳正確尺寸
-            },
+            .onSizeChanged { intSize -> moleViewModel.getArea(intSize, moleSizePx) },
         contentAlignment = Alignment.Center
     ) {
-        Text("分數: $counter \n時間: $stay")
+        // 顯示遊戲名稱、分數與時間
+        Text(
+            "打地鼠遊戲 (王奕翔)\n分數: $counter\n時間: $stay 秒",
+            modifier = Modifier.padding(bottom = 20.dp)
+        )
     }
 
+    // 顯示地鼠圖片
     Image(
         painter = painterResource(id = R.drawable.mole),
         contentDescription = "地鼠",

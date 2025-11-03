@@ -16,7 +16,7 @@ class MoleViewModel : ViewModel() {
     var counter by mutableLongStateOf(0)
         private set  // 只有 ViewModel 內部可以修改它
 
-    // 計數器，用來自動增加的計數器
+    // 計時器，用來從0開始計時
     var stay by mutableLongStateOf(0)
         private set  // 只有 ViewModel 內部可以修改它
 
@@ -34,24 +34,30 @@ class MoleViewModel : ViewModel() {
     var offsetY by mutableStateOf(0)
         private set
 
+    // 是否停止遊戲
+    var isGameOver by mutableStateOf(false)
+        private set
+
     init {
-        // 在 ViewModel 初始化時啟動一個協程來自動增加計數器
-        startCounting()
+        startCounting() // 開始計時
     }
 
     // 增加 counter 的值
     fun incrementCounter() {
-        counter++
+        if (!isGameOver) {  // 當遊戲結束時，點擊不再加分
+            counter++
+        }
     }
 
     // 啟動協程，每秒增加一次 stay 的值，並隨機移動地鼠
     private fun startCounting() {
         viewModelScope.launch {
-            while (true) { // 無限循環，每秒增加一次
+            while (!isGameOver && stay < 60) { // 當時間未到60秒
                 delay(1000L)  // 延遲 1 秒
                 stay++ // 計數器加 1，這會自動觸發 UI 更新
                 moveMole() // 每秒隨機移動地鼠
             }
+            endGame()  // 60秒後結束遊戲
         }
     }
 
@@ -63,7 +69,14 @@ class MoleViewModel : ViewModel() {
 
     // 隨機移動地鼠，不會超出螢幕範圍
     fun moveMole() {
-        offsetX = (0..maxX).random()  // 隨機位置X
-        offsetY = (0..maxY).random()  // 隨機位置Y
+        if (!isGameOver) {
+            offsetX = (0..maxX).random()  // 隨機位置X
+            offsetY = (0..maxY).random()  // 隨機位置Y
+        }
+    }
+
+    // 停止遊戲
+    private fun endGame() {
+        isGameOver = true
     }
 }
